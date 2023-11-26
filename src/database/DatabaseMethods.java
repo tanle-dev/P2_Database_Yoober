@@ -325,6 +325,17 @@ public class DatabaseMethods {
     ArrayList<RideRequest> uncompletedRideRequests = new ArrayList<RideRequest>();
 
     // TODO: Implement
+    String getUncompltedRideReqSql = "SELECT rrq.ID, a.FIRST_NAME, a. LAST_NAME, ad_p.STREET AS PICK_UP_STREET, ad_p.CITY AS PICK_UP_CITY, ad_d.STREET AS DROP_OFF_STREET, ad_d.CITY AS DROP_OFF_CITY, rrq.PICKUP_DATE, rrq.PICKUP_TIME FROM ride_requests rrq LEFT JOIN rides r ON rrq.ID = r.REQUEST_ID INNER JOIN accounts a ON rrq.PASSENGER_ID = a.ID INNER JOIN addresses ad_p ON rrq.PICKUP_LOCATION_ID = ad_p.ID INNER JOIN addresses ad_d ON rrq.DROPOFF_LOCATION_ID = ad_d.ID WHERE r.ID IS NULL";
+    PreparedStatement pStmtGetUncompltedRideReq = conn.prepareStatement(getUncompltedRideReqSql);
+    ResultSet rs = pStmtGetUncompltedRideReq.executeQuery();
+
+    while (rs.next()) {
+      RideRequest rideRequest = new RideRequest(rs.getInt("ID"), rs.getString("FIRST_NAME"), rs.getString("LAST_NAME"),
+          rs.getString("PICK_UP_STREET"), rs.getString("PICK_UP_CITY"), rs.getString("DROP__OFF__STREET"),
+          rs.getString("DROP_OFF_CITY"), rs.getString("PICKUP_DATE"), rs.getString("PICKUP_TIME"));
+
+      uncompletedRideRequests.add(rideRequest);
+    }
 
     return uncompletedRideRequests;
   }
