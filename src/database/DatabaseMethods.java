@@ -277,6 +277,14 @@ public class DatabaseMethods {
   public int getAccountAddressIdFromEmail(String email) throws SQLException {
     int addressId = -1;
     // TODO: Implement
+    String getAddIdFromEmailSql = "SELECT a.ADDRESS_ID FROM accounts a WHERE a.EMAIL = ?";
+    PreparedStatement pStmtgetAddIdFromEmail = conn.prepareStatement(getAddIdFromEmailSql);
+    pStmtgetAddIdFromEmail.setString(1, email);
+    ResultSet rs = pStmtgetAddIdFromEmail.executeQuery();
+
+    while (rs.next()) {
+      addressId = rs.getInt(1);
+    }
 
     return addressId;
   }
