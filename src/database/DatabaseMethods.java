@@ -300,6 +300,17 @@ public class DatabaseMethods {
     ArrayList<FavouriteDestination> favouriteDestinations = new ArrayList<FavouriteDestination>();
 
     // TODO: Implement
+    String getFavDestForPaxSql = "SELECT f.NAME, ad.ID, ad.STREET, ad.CITY, ad.PROVINCE, ad.POSTAL_CODE FROM accounts a INNER JOIN passengers p ON a.ID = p.ID INNER JOIN favourite_locations f ON p.ID = f.PASSENGER_ID INNER JOIN addresses ad ON f.LOCATION_ID = ad.ID WHERE a.EMAIL = ?";
+    PreparedStatement pStmtgetFavDestForPax = conn.prepareStatement(getFavDestForPaxSql);
+    pStmtgetFavDestForPax.setString(1, passengerEmail);
+    ResultSet rs = pStmtgetFavDestForPax.executeQuery();
+
+    while (rs.next()) {
+      FavouriteDestination favDest = new FavouriteDestination(rs.getString("NAME"), rs.getInt("ID"),
+          rs.getString("STREET"), rs.getString("CITY"), rs.getString("PROVINCE"), rs.getString("POSTAL_CODE"));
+
+      favouriteDestinations.add(favDest);
+    }
 
     return favouriteDestinations;
   }
