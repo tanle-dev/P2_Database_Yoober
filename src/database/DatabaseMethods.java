@@ -62,6 +62,14 @@ public class DatabaseMethods {
     double averageRating = 0.0;
 
     // TODO: Implement
+    String getAvgRatingSql = "SELECT AVG(RATING_FROM_PASSENGER) FROM accounts a INNER JOIN rides r ON a.ID = r.DRIVER_ID WHERE a.EMAIL = ? GROUP BY r.DRIVER_ID";
+    PreparedStatement pStmtforGetAvgRating = conn.prepareStatement(getAvgRatingSql);
+    pStmtforGetAvgRating.setString(1, driverEmail);
+    ResultSet rs = pStmtforGetAvgRating.executeQuery();
+
+    while (rs.next()) {
+      averageRating = rs.getDouble(1);
+    }
 
     return averageRating;
   }
@@ -172,8 +180,17 @@ public class DatabaseMethods {
    */
   public boolean checkDriverExists(String email) throws SQLException {
     // TODO: Implement
+    String checkDriverExistsSql = "SELECT COUNT(*) FROM accounts a INNER JOIN drivers d ON a.ID = d.ID WHERE a.EMAIL = ?";
+    PreparedStatement pStmtCheckDriverExists = conn.prepareStatement(checkDriverExistsSql);
+    pStmtCheckDriverExists.setString(1, email);
+    ResultSet rs = pStmtCheckDriverExists.executeQuery();
 
-    return true;
+    boolean isExistedDriver = true;
+    while (rs.next()) {
+      isExistedDriver = rs.getInt(1) > 0 ? true : false;
+    }
+
+    return isExistedDriver;
   }
 
   /*
@@ -183,8 +200,17 @@ public class DatabaseMethods {
    */
   public boolean checkPassengerExists(String email) throws SQLException {
     // TODO: Implement
+    String checkPaxExistsSql = "SELECT COUNT(*) FROM accounts a INNER JOIN passengers p ON a.ID = p.ID WHERE a.EMAIL = ?";
+    PreparedStatement pStmtCheckPaxExists = conn.prepareStatement(checkPaxExistsSql);
+    pStmtCheckPaxExists.setString(1, email);
+    ResultSet rs = pStmtCheckPaxExists.executeQuery();
 
-    return true;
+    boolean isExistedPax = true;
+    while (rs.next()) {
+      isExistedPax = rs.getInt(1) > 0 ? true : false;
+    }
+
+    return isExistedPax;
   }
 
   /*
@@ -210,6 +236,14 @@ public class DatabaseMethods {
   public int getPassengerIdFromEmail(String passengerEmail) throws SQLException {
     int passengerId = -1;
     // TODO: Implement
+    String getPaxIdFromEmailSql = "SELECT p.ID FROM accounts a INNER JOIN passengers p ON a.ID = p.ID WHERE a.EMAIL = ?";
+    PreparedStatement pStmtgetPaxIdFromEmail = conn.prepareStatement(getPaxIdFromEmailSql);
+    pStmtgetPaxIdFromEmail.setString(1, passengerEmail);
+    ResultSet rs = pStmtgetPaxIdFromEmail.executeQuery();
+
+    while (rs.next()) {
+      passengerId = rs.getInt(1);
+    }
 
     return passengerId;
   }
@@ -222,6 +256,14 @@ public class DatabaseMethods {
   public int getDriverIdFromEmail(String driverEmail) throws SQLException {
     int driverId = -1;
     // TODO: Implement
+    String getDriverIdFromEmailSql = "SELECT d.ID FROM accounts a INNER JOIN drivers d ON a.ID = d.ID WHERE a.EMAIL = ?";
+    PreparedStatement pStmtgetDriverIdFromEmail = conn.prepareStatement(getDriverIdFromEmailSql);
+    pStmtgetDriverIdFromEmail.setString(1, driverEmail);
+    ResultSet rs = pStmtgetDriverIdFromEmail.executeQuery();
+
+    while (rs.next()) {
+      driverId = rs.getInt(1);
+    }
 
     return driverId;
   }
