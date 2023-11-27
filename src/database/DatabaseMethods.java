@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import dataClasses.Account;
@@ -331,7 +332,7 @@ public class DatabaseMethods {
 
     while (rs.next()) {
       RideRequest rideRequest = new RideRequest(rs.getInt("ID"), rs.getString("FIRST_NAME"), rs.getString("LAST_NAME"),
-          rs.getString("PICK_UP_STREET"), rs.getString("PICK_UP_CITY"), rs.getString("DROP__OFF__STREET"),
+          rs.getString("PICK_UP_STREET"), rs.getString("PICK_UP_CITY"), rs.getString("DROP_OFF_STREET"),
           rs.getString("DROP_OFF_CITY"), rs.getString("PICKUP_DATE"), rs.getString("PICKUP_TIME"));
 
       uncompletedRideRequests.add(rideRequest);
@@ -348,6 +349,31 @@ public class DatabaseMethods {
   public void insertRide(Ride ride) throws SQLException {
     // TODO: Implement
     // Hint: Use getDriverIdFromEmail
+    String rideRqExistSql = "SELECT ID FROM rides WHERE REQUEST_ID = ?";
+    String insertRide = "INSERT INTO rides(DRIVER_ID, REQUEST_ID, ACTUAL_START_DATE, ACTUAL_START_TIME, ACTUAL_END_DATE, ACTUAL_END_TIME, RATING_FROM_DRIVER, RATING_FROM_PASSENGER, DISTANCE, CHARGE) VALUES (?,?,?,?,?,?,?,?,?,?)";
+
+    // Check ride exists firstly
+    PreparedStatement pStmtRideRqExist = conn.prepareStatement(rideRqExistSql);
+    PreparedStatement pStmtInsertRide = conn.prepareStatement(insertRide, Statement.RETURN_GENERATED_KEYS);
+    pStmtRideRqExist.setInt(1, ride.getRideRequestId());
+    ResultSet rs = pStmtRideRqExist.executeQuery();
+
+    if (rs.next()) {
+
+    } else {
+      pStmtInsertRide.setInt(1, this.getDriverIdFromEmail(ride.getDriverEmail()));
+      pStmtInsertRide.setInt(2, ride.getRideRequestId());
+      pStmtInsertRide.setString(3, ride.getStartDate());
+      pStmtInsertRide.setString(4, ride.getStartTime());
+      pStmtInsertRide.setString(5, ride.getEndDate());
+      pStmtInsertRide.setString(6, ride.getEndTime());
+      pStmtInsertRide.setInt(7, ride.getRatingFromDriver());
+      pStmtInsertRide.setInt(8, ride.getRatingFromPassenger());
+      pStmtInsertRide.setDouble(9, ride.getDistance());
+      pStmtInsertRide.setDouble(10, ride.getCharge());
+
+      pStmtInsertRide.executeUpdate();
+    }
   }
 
 }
