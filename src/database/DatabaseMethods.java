@@ -141,6 +141,26 @@ public class DatabaseMethods {
   public int insertLicense(String licenseNumber, String licenseExpiry) throws SQLException {
     int licenseId = -1;
     // TODO: Implement
+    String licenseExistsSql = "SELECT ID FROM licenses WHERE NUMBER = ?";
+    String insertLicenseSql = "INSERT INTO licenses(NUMBER, EXPIRY_DATE) VALUES(?, ?)";
+    PreparedStatement pStmtlicenseExists = conn.prepareStatement(licenseExistsSql);
+    PreparedStatement pStmtInsertLicense = conn.prepareStatement(insertLicenseSql, Statement.RETURN_GENERATED_KEYS);
+
+    pStmtlicenseExists.setString(1, licenseNumber);
+    ResultSet rs = pStmtlicenseExists.executeQuery();
+
+    if (rs.next()) {
+      licenseId = rs.getInt(1);
+    } else {
+      pStmtInsertLicense.setString(1, licenseNumber);
+      pStmtInsertLicense.setString(2, licenseExpiry);
+
+      pStmtlicenseExists.setString(1, licenseNumber);
+      rs = pStmtlicenseExists.executeQuery();
+      while (rs.next()) {
+        licenseId = rs.getInt(1);
+      }
+    }
 
     return licenseId;
   }
