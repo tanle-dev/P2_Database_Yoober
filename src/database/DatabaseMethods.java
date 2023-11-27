@@ -178,6 +178,31 @@ public class DatabaseMethods {
     int addressId = -1;
 
     // TODO: Implement
+    String getAddFromProperties = "SELECT ID FROM addresses WHERE STREET = ? AND CITY = ? AND PROVINCE = ? AND POSTAL_CODE = ?";
+    String insertAddSql = "INSERT INTO addresses(STREET, CITY, PROVINCE, POSTAL_CODE) VALUES(?, ?, ?, ?)";
+    PreparedStatement pStmtGetAddFromProperties = conn.prepareStatement(getAddFromProperties);
+    PreparedStatement pStmtInsertAdd = conn.prepareStatement(insertAddSql, Statement.RETURN_GENERATED_KEYS);
+
+    pStmtGetAddFromProperties.setString(1, address.getStreet());
+    pStmtGetAddFromProperties.setString(2, address.getCity());
+    pStmtGetAddFromProperties.setString(3, address.getProvince());
+    pStmtGetAddFromProperties.setString(4, address.getPostalCode());
+
+    ResultSet rs = pStmtGetAddFromProperties.executeQuery();
+    if (rs.next()) {
+      addressId = rs.getInt("ID");
+    } else {
+      pStmtInsertAdd.setString(1, address.getStreet());
+      pStmtInsertAdd.setString(2, address.getCity());
+      pStmtInsertAdd.setString(3, address.getProvince());
+      pStmtInsertAdd.setString(4, address.getPostalCode());
+      pStmtInsertAdd.executeUpdate();
+
+      rs = pStmtGetAddFromProperties.executeQuery();
+      while (rs.next()) {
+        addressId = rs.getInt("ID");
+      }
+    }
 
     return addressId;
   }
