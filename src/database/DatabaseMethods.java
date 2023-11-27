@@ -172,6 +172,14 @@ public class DatabaseMethods {
   public void insertFavouriteDestination(String favouriteName, String passengerEmail, int addressId)
       throws SQLException {
     // TODO: Implement
+    String insertFavDestSql = "INSERT INTO favourite_locations(NAME, PASSENGER_ID, LOCATION_ID) VALUES(?, ?, ?)";
+    PreparedStatement pStmtInsertFavDest = conn.prepareStatement(insertFavDestSql, Statement.RETURN_GENERATED_KEYS);
+
+    pStmtInsertFavDest.setString(1, favouriteName);
+    pStmtInsertFavDest.setInt(2, this.getPassengerIdFromEmail(passengerEmail));
+    pStmtInsertFavDest.setInt(3, addressId);
+
+    pStmtInsertFavDest.executeUpdate();
   }
 
   /*
