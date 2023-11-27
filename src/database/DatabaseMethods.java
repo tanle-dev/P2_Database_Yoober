@@ -226,6 +226,17 @@ public class DatabaseMethods {
     int pickupAddressId = this.getAccountAddressIdFromEmail(passengerEmail);
 
     // TODO: Implement
+    String insertRideRqSql = "INSERT INTO ride_requests(PASSENGER_ID, PICKUP_LOCATION_ID, PICKUP_DATE, PICKUP_TIME, NUMBER_OF_RIDERS, DROPOFF_LOCATION_ID) VALUES(?,?,?,?,?,?)";
+    PreparedStatement insertRideRq = conn.prepareStatement(insertRideRqSql, Statement.RETURN_GENERATED_KEYS);
+
+    insertRideRq.setInt(1, passengerId);
+    insertRideRq.setInt(2, pickupAddressId);
+    insertRideRq.setString(3, date);
+    insertRideRq.setString(4, time);
+    insertRideRq.setInt(5, numberOfPassengers);
+    insertRideRq.setInt(6, dropoffLocationId);
+
+    insertRideRq.executeUpdate();
   }
 
   /*
