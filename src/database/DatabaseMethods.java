@@ -89,6 +89,12 @@ public class DatabaseMethods {
     // TODO: Implement
     // Hint: Use the available insertAccount, insertPassenger, and insertDriver
     // methods
+    int accountId = insertAccount(account);
+
+    if (account.isDriver())
+      insertDriver(driver, accountId);
+    if (account.isPassenger())
+      insertPassenger(passenger, accountId);
   }
 
   /*
@@ -112,6 +118,7 @@ public class DatabaseMethods {
     pStmtInsertAccount.setInt(4, insertAddressIfNotExists(account.getAddress()));
     pStmtInsertAccount.setString(5, account.getPhoneNumber());
     pStmtInsertAccount.setString(6, account.getEmail());
+    pStmtInsertAccount.executeUpdate();
 
     ResultSet rs = pStmtInsertAccount.getGeneratedKeys();
     while (rs.next()) {
@@ -153,7 +160,6 @@ public class DatabaseMethods {
     PreparedStatement pStmtInsertDriver = conn.prepareStatement(insertDriverSql, Statement.RETURN_GENERATED_KEYS);
     pStmtInsertDriver.setInt(1, accountId);
     pStmtInsertDriver.setInt(2, insertLicense(driver.getLicenseNumber(), driver.getLicenseExpiryDate()));
-
     pStmtInsertDriver.executeUpdate();
 
     return accountId;
@@ -180,8 +186,8 @@ public class DatabaseMethods {
     } else {
       pStmtInsertLicense.setString(1, licenseNumber);
       pStmtInsertLicense.setString(2, licenseExpiry);
+      pStmtInsertLicense.executeUpdate();
 
-      pStmtlicenseExists.setString(1, licenseNumber);
       rs = pStmtlicenseExists.getGeneratedKeys();
       while (rs.next()) {
         licenseId = rs.getInt(1);
@@ -450,7 +456,6 @@ public class DatabaseMethods {
     ResultSet rs = pStmtRideRqExist.executeQuery();
 
     if (rs.next()) {
-
     } else {
       pStmtInsertRide.setInt(1, this.getDriverIdFromEmail(ride.getDriverEmail()));
       pStmtInsertRide.setInt(2, ride.getRideRequestId());
