@@ -103,6 +103,20 @@ public class DatabaseMethods {
 
     // TODO: Implement
     // Hint: Use the insertAddressIfNotExists method
+    String insertAccountSql = "INSERT INTO accounts(FIRST_NAME, LAST_NAME, BIRTHDATE, ADDRESS_ID, PHONE_NUMBER, EMAIL) VALUES(?,?,?,?,?,?)";
+    PreparedStatement pStmtInsertAccount = conn.prepareStatement(insertAccountSql, Statement.RETURN_GENERATED_KEYS);
+
+    pStmtInsertAccount.setString(1, account.getFirstName());
+    pStmtInsertAccount.setString(2, account.getLastName());
+    pStmtInsertAccount.setString(3, account.getBirthdate());
+    pStmtInsertAccount.setInt(4, insertAddressIfNotExists(account.getAddress()));
+    pStmtInsertAccount.setString(5, account.getPhoneNumber());
+    pStmtInsertAccount.setString(6, account.getEmail());
+
+    ResultSet rs = pStmtInsertAccount.getGeneratedKeys();
+    while (rs.next()) {
+      accountId = rs.getInt(1);
+    }
 
     return accountId;
   }
@@ -116,6 +130,12 @@ public class DatabaseMethods {
    */
   public int insertPassenger(Passenger passenger, int accountId) throws SQLException {
     // TODO: Implement
+    String insertPaxSql = "INSERT INTO passengers VALUES(?, ?)";
+    PreparedStatement pStmtInsertPax = conn.prepareStatement(insertPaxSql, Statement.RETURN_GENERATED_KEYS);
+
+    pStmtInsertPax.setInt(1, accountId);
+    pStmtInsertPax.setString(2, passenger.getCreditCardNumber());
+    pStmtInsertPax.executeUpdate();
 
     return accountId;
   }
@@ -129,6 +149,12 @@ public class DatabaseMethods {
   public int insertDriver(Driver driver, int accountId) throws SQLException {
     // TODO: Implement
     // Hint: Use the insertLicense method
+    String insertDriverSql = "INSERT INTO drivers VALUES(?,?)";
+    PreparedStatement pStmtInsertDriver = conn.prepareStatement(insertDriverSql, Statement.RETURN_GENERATED_KEYS);
+    pStmtInsertDriver.setInt(1, accountId);
+    pStmtInsertDriver.setInt(2, insertLicense(driver.getLicenseNumber(), driver.getLicenseExpiryDate()));
+
+    pStmtInsertDriver.executeUpdate();
 
     return accountId;
   }
@@ -156,7 +182,7 @@ public class DatabaseMethods {
       pStmtInsertLicense.setString(2, licenseExpiry);
 
       pStmtlicenseExists.setString(1, licenseNumber);
-      rs = pStmtlicenseExists.executeQuery();
+      rs = pStmtlicenseExists.getGeneratedKeys();
       while (rs.next()) {
         licenseId = rs.getInt(1);
       }
@@ -198,9 +224,10 @@ public class DatabaseMethods {
       pStmtInsertAdd.setString(4, address.getPostalCode());
       pStmtInsertAdd.executeUpdate();
 
-      rs = pStmtGetAddFromProperties.executeQuery();
+      // rs = pStmtGetAddFromProperties.executeQuery();
+      rs = pStmtInsertAdd.getGeneratedKeys();
       while (rs.next()) {
-        addressId = rs.getInt("ID");
+        addressId = rs.getInt(1);
       }
     }
 
