@@ -1,7 +1,15 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import menuOptions.*;
+
+import menuOptions.AllAccountsMenuOption;
+import menuOptions.CompleteRideMenuOption;
+import menuOptions.CreateAccountMenuOption;
+import menuOptions.DriverAverageRatingMenuOption;
+import menuOptions.MenuOption;
+import menuOptions.SubmitRideRequestMenuOption;
 
 public class App {
   public static void main(String[] args) throws Exception {
