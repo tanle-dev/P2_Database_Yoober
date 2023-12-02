@@ -37,26 +37,16 @@ public class DatabaseMethods {
 
     // TODO: Implement
     String getAllAccSql = "SELECT * FROM accounts ac INNER JOIN addresses ad ON ac.ADDRESS_ID = ad.ID";
-    String isDriverSql = "SELECT * FROM drivers WHERE ID = ?";
-    String isPaxSql = "SELECT * FROM passengers WHERE ID = ?";
     PreparedStatement pStmtforGetAllAccounts = conn.prepareStatement(getAllAccSql);
-    PreparedStatement pStmtIsDriver = conn.prepareStatement(isDriverSql);
-    PreparedStatement pStmtIsPax = conn.prepareStatement(isPaxSql);
-    ResultSet rs = null, rsIsDriver = null, rsIsPax = null;
+    ResultSet rs = null;
 
     rs = pStmtforGetAllAccounts.executeQuery();
 
     while (rs.next()) {
-      pStmtIsDriver.setInt(1, rs.getInt("ID"));
-      rsIsDriver = pStmtIsDriver.executeQuery();
-
-      pStmtIsPax.setInt(1, rs.getInt("ID"));
-      rsIsPax = pStmtIsPax.executeQuery();
-
       Account account = new Account(rs.getString("FIRST_NAME"), rs.getString("LAST_NAME"), rs.getString("STREET"),
           rs.getString("CITY"), rs.getString("PROVINCE"),
           rs.getString("POSTAL_CODE"), rs.getString("PHONE_NUMBER"), rs.getString("EMAIL"), rs.getString("BIRTHDATE"),
-          rsIsPax.next(), rsIsDriver.next());
+          checkPassengerExists(rs.getString("EMAIL")), checkDriverExists(rs.getString("EMAIL")));
 
       accounts.add(account);
     }
